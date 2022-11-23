@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @CrossOrigin("http://localhost:4200")
@@ -40,14 +41,14 @@ public class EspecieController {
     }
 
     @PutMapping(value = "api/especie/{id}")
-    public ResponseEntity<Especie> updateEspecie(@PathVariable(value = "id") long id, @RequestBody Especie newEspecie){
+    public ResponseEntity<Especie> updateEspecie(@PathVariable(value = "id") long id, @RequestParam Map<String, String> newEspecie){
         Optional<Especie> especie = especieRepository.findById(id);
         if (especie.isPresent()) {
             try {
                 Especie especieUpdate = especie.get();
-                especieUpdate.setDescricao(newEspecie.getDescricao());
-                especieUpdate.setNome(newEspecie.getNome());
-                especieUpdate.setStatus(newEspecie.getStatus());
+                especieUpdate.setDescricao(newEspecie.get("descricao"));
+                especieUpdate.setNome(newEspecie.get("nome"));
+                especieUpdate.setStatus(Status.values()[Integer.parseInt(newEspecie.get("status"))]);
                 Especie especieUpdated = especieRepository.save(especieUpdate);
                 return new ResponseEntity<>(especieUpdated, HttpStatus.OK);
             } catch (Exception e) {

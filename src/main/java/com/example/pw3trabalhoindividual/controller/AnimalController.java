@@ -1,6 +1,7 @@
 package com.example.pw3trabalhoindividual.controller;
 
 import com.example.pw3trabalhoindividual.model.Animal;
+import com.example.pw3trabalhoindividual.model.Tamanho;
 import com.example.pw3trabalhoindividual.repository.AnimalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @CrossOrigin("http://localhost:4200")
@@ -48,14 +50,14 @@ public class AnimalController {
     }
 
     @PutMapping(value = "api/animal/{id}")
-    public ResponseEntity<Animal> updateAnimal(@PathVariable(value = "id") long id, @RequestBody Animal newAnimal){
+    public ResponseEntity<Animal> updateAnimal(@PathVariable(value = "id") long id, @RequestParam Map<String, String> newAnimal){
         Optional<Animal> animal = animalRepository.findById(id);
         if(animal.isPresent()){
             Animal animalUpdate = animal.get();
-            animalUpdate.setDescricao(newAnimal.getDescricao());
-            animalUpdate.setNome(newAnimal.getNome());
-            animalUpdate.setTamanho(newAnimal.getTamanho());
-            animalUpdate.setObservacao(newAnimal.getObservacao());
+            animalUpdate.setDescricao(newAnimal.get("descricao"));
+            animalUpdate.setNome(newAnimal.get("nome"));
+            animalUpdate.setTamanho(Tamanho.values()[Integer.parseInt(newAnimal.get("tamanho"))]);
+            animalUpdate.setObservacao(newAnimal.get("observacao"));
             try{
                 Animal animalUpdated = animalRepository.save(animalUpdate);
                 return new ResponseEntity<>(animalUpdated, HttpStatus.OK);

@@ -30,11 +30,14 @@ public class EspecieController {
     }
 
     @PostMapping(value = "api/especie")
-    public ResponseEntity<Especie> saveEspecie(@RequestBody Especie especie){
+    public ResponseEntity<Especie> saveEspecie(@RequestParam Map<String, String> newEspecie){
         try{
+            Especie especie = new Especie();
+            especie.setNome(newEspecie.get("nome"));
+            especie.setDescricao(newEspecie.get("descricao"));
             especie.setStatus(Status.ATIVO);
-            Especie newEspecie = especieRepository.save(especie);
-            return new ResponseEntity<>(newEspecie, HttpStatus.CREATED);
+            Especie especieSaved = especieRepository.save(especie);
+            return new ResponseEntity<>(especieSaved, HttpStatus.CREATED);
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

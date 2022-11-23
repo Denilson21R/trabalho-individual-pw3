@@ -1,6 +1,7 @@
 package com.example.pw3trabalhoindividual.controller;
 
 import com.example.pw3trabalhoindividual.model.Animal;
+import com.example.pw3trabalhoindividual.model.Especie;
 import com.example.pw3trabalhoindividual.model.Tamanho;
 import com.example.pw3trabalhoindividual.repository.AnimalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +41,23 @@ public class AnimalController {
     }
 
     @PostMapping(value = "api/animal")
-    public ResponseEntity<Animal> addAnimal(@RequestBody Animal newAnimal){
+    public ResponseEntity<Animal> addAnimal(@RequestParam Map<String, String> newAnimal){
         try{
-            Animal animal = animalRepository.save(newAnimal);
-            return new ResponseEntity<>(animal, HttpStatus.CREATED);
+            Animal animal = new Animal();
+            animal.setNome(newAnimal.get("nome"));
+            animal.setTamanho(Tamanho.values()[Integer.parseInt(newAnimal.get("tamanho"))]);
+            animal.setDescricao(newAnimal.get("descricao"));
+            animal.setNome_dono(newAnimal.get("dono"));
+
+            Especie especie = new Especie();
+            especie.setId(Long.valueOf(newAnimal.get("especie")));
+
+            animal.setEspecie(especie);
+            if(newAnimal.get("observacao") != null){
+                animal.setObservacao(newAnimal.get("observacao"));
+            }
+            Animal animalSavedanimal = animalRepository.save(animal);
+            return new ResponseEntity<>(animalSavedanimal, HttpStatus.CREATED);
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
